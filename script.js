@@ -1,5 +1,5 @@
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzK5SmE9BUS5g45x_ecfAdUOPMtJnjkRVJ5FO6Vdy7Z4xLLZC1db64DnlRQVvSHCgYb5w/exec?key=mySecret123&sheet=Patients";
+  "https://script.google.com/macros/s/AKfycbwa1w1_KxqcqXhbApR1rrtA2yxNNFnpeaBhKnvGDE3L15VtjlAvkbSLy1wTQj7Pq_rG/exec?key=mySecret123&sheet=Patients";
 
 let data = [];
 let nextSrNo = 1;
@@ -370,4 +370,5 @@ document.getElementById("clearGoogleForm").addEventListener("click", () => {
   document.querySelectorAll("#form input").forEach((i) => (i.value = ""));
   showToast("Google Sheet form cleared", "info");
 });
+
 
