@@ -116,6 +116,26 @@ document.getElementById("addRow").addEventListener("click", () => {
 });
 
 // 🔍 SEARCH: exact match first, then partial
+// document.getElementById("search").addEventListener("input", (e) => {
+//   const q = e.target.value.toLowerCase().trim();
+//   if (!q) return render(data);
+
+//   const rows = data.slice(1);
+
+//   const exact = [];
+//   const partial = [];
+
+//   rows.forEach((row) => {
+//     if (row.some((c) => String(c).toLowerCase() === q)) {
+//       exact.push(row);
+//     } else if (row.some((c) => String(c).toLowerCase().includes(q))) {
+//       partial.push(row);
+//     }
+//   });
+
+//   render([data[0], ...exact, ...partial]);
+// });
+
 document.getElementById("search").addEventListener("input", (e) => {
   const q = e.target.value.toLowerCase().trim();
   if (!q) return render(data);
@@ -123,17 +143,22 @@ document.getElementById("search").addEventListener("input", (e) => {
   const rows = data.slice(1);
 
   const exact = [];
-  const partial = [];
+  const starts = [];
+  const contains = [];
 
   rows.forEach((row) => {
-    if (row.some((c) => String(c).toLowerCase() === q)) {
+    const cells = row.map((c) => String(c || "").toLowerCase());
+
+    if (cells.some((c) => c === q)) {
       exact.push(row);
-    } else if (row.some((c) => String(c).toLowerCase().includes(q))) {
-      partial.push(row);
+    } else if (cells.some((c) => c.startsWith(q))) {
+      starts.push(row);
+    } else if (cells.some((c) => c.includes(q))) {
+      contains.push(row);
     }
   });
 
-  render([data[0], ...exact, ...partial]);
+  render([data[0], ...exact, ...starts, ...contains]);
 });
 
 // ===============================
@@ -313,3 +338,4 @@ document.getElementById("clearGoogleForm").addEventListener("click", () => {
   document.querySelectorAll("#form input").forEach((i) => (i.value = ""));
   showToast("Google Sheet form cleared", "info");
 });
+
