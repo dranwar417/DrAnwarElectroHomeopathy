@@ -1,5 +1,5 @@
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwa1w1_KxqcqXhbApR1rrtA2yxNNFnpeaBhKnvGDE3L15VtjlAvkbSLy1wTQj7Pq_rG/exec?key=mySecret123&sheet=Patients";
+  "https://script.google.com/macros/s/AKfycbzK5SmE9BUS5g45x_ecfAdUOPMtJnjkRVJ5FO6Vdy7Z4xLLZC1db64DnlRQVvSHCgYb5w/exec?key=mySecret123&sheet=Patients";
 
 let data = [];
 let nextSrNo = 1;
@@ -13,13 +13,41 @@ const CASE_TO_SHEET_MAP = {
   3: "address", // Address column
 };
 
+const addRowBtn = document.getElementById("addRow");
+const addRowBtnText = addRowBtn.innerText;
+
+const loadingEl = document.getElementById("loading");
+
+function showLoading(msg = "Loading…") {
+  loadingEl.textContent = msg;
+  loadingEl.classList.remove("hidden");
+}
+
+function hideLoading() {
+  loadingEl.classList.add("hidden");
+}
+
+function setBusy(state) {
+  document.querySelectorAll("button").forEach((b) => (b.disabled = state));
+}
+
+
+showLoading("Fetching patients…");
+
 fetch(API_URL)
   .then((res) => res.json())
   .then((json) => {
     data = json;
     nextSrNo = Math.max(...data.slice(1).map((r) => Number(r[0]) || 0)) + 1;
+
     render(data);
     createForm(data[0]);
+  })
+  .catch(() => {
+    showToast("Failed to load data", "error");
+  })
+  .finally(() => {
+    hideLoading();
   });
 
 function render(rows) {
@@ -95,47 +123,53 @@ Object.values(CASE_TO_SHEET_MAP).forEach((fieldId) => {
   el.addEventListener("input", fillGoogleFormFromCase);
 });
 
-document.getElementById("addRow").addEventListener("click", () => {
+addRowBtn.addEventListener("click", () => {
+  if (addRowBtn.disabled) return;
+
   const inputs = document.querySelectorAll("#form input");
+
+  const hasValue = [...inputs].some((i) => i.value.trim());
+  if (!hasValue) {
+    showToast("Please enter at least one field", "info");
+    return;
+  }
+
   const newRow = [];
-  newRow[0] = nextSrNo++;
+  newRow[0] = nextSrNo; // increment only after success
 
   inputs.forEach((i) => {
     newRow[i.dataset.col] = i.value;
     i.value = "";
   });
 
+  // 🔒 BUTTON STATE
+  addRowBtn.disabled = true;
+  addRowBtn.innerText = "Adding…";
+
+  showLoading("Saving patient…");
+
   fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "text/plain;charset=utf-8" },
     body: JSON.stringify(newRow),
-  }).then(() => {
-    data.push(newRow);
-    render(data);
-  });
+  })
+    .then(() => {
+      nextSrNo++;
+      data.push(newRow);
+      render(data);
+      showToast("Patient saved", "success");
+    })
+    .catch(() => {
+      showToast("Save failed", "error");
+    })
+    .finally(() => {
+      hideLoading();
+      addRowBtn.disabled = false;
+      addRowBtn.innerText = addRowBtnText;
+    });
 });
 
-// 🔍 SEARCH: exact match first, then partial
-// document.getElementById("search").addEventListener("input", (e) => {
-//   const q = e.target.value.toLowerCase().trim();
-//   if (!q) return render(data);
-
-//   const rows = data.slice(1);
-
-//   const exact = [];
-//   const partial = [];
-
-//   rows.forEach((row) => {
-//     if (row.some((c) => String(c).toLowerCase() === q)) {
-//       exact.push(row);
-//     } else if (row.some((c) => String(c).toLowerCase().includes(q))) {
-//       partial.push(row);
-//     }
-//   });
-
-//   render([data[0], ...exact, ...partial]);
-// });
-
+// 🔍 SEARCH: exact → startsWith → contains (NO OTHERS)
 document.getElementById("search").addEventListener("input", (e) => {
   const q = e.target.value.toLowerCase().trim();
   if (!q) return render(data);
@@ -323,7 +357,8 @@ window.addEventListener("load", () => {
 });
 
 // ===============================
-// 🧹 CLEAR FORM
+// 🧹
+ CLEAR FORM
 // ===============================
 function clearForm() {
   fields.forEach((id) => {
@@ -338,4 +373,3 @@ document.getElementById("clearGoogleForm").addEventListener("click", () => {
   document.querySelectorAll("#form input").forEach((i) => (i.value = ""));
   showToast("Google Sheet form cleared", "info");
 });
-
