@@ -50,19 +50,6 @@ function render(rows) {
   });
 }
 
-// function createForm(headers) {
-//   const form = document.getElementById("form");
-//   form.innerHTML = "";
-
-//   headers.forEach((h, i) => {
-//     if (i === 0) return;
-//     const input = document.createElement("input");
-//     input.placeholder = h;
-//     input.dataset.col = i;
-//     form.appendChild(input);
-//   });
-// }
-
 function createForm(headers) {
   const form = document.getElementById("form");
   form.innerHTML = "";
@@ -155,7 +142,6 @@ document.getElementById("search").addEventListener("input", (e) => {
 const patientName = document.getElementById("patientName");
 const age = document.getElementById("age");
 const gender = document.getElementById("gender");
-const phone = document.getElementById("phone");
 const address = document.getElementById("address");
 
 const chiefComplaint = document.getElementById("chiefComplaint");
@@ -175,7 +161,6 @@ const fields = [
   "patientName",
   "age",
   "gender",
-  "phone",
   "address",
   "chiefComplaint",
   "duration",
