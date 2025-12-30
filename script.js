@@ -356,10 +356,7 @@ window.addEventListener("load", () => {
   });
 });
 
-// ===============================
-// 🧹
- CLEAR FORM
-// ===============================
+
 function clearForm() {
   fields.forEach((id) => {
     const el = document.getElementById(id);
@@ -373,3 +370,4 @@ document.getElementById("clearGoogleForm").addEventListener("click", () => {
   document.querySelectorAll("#form input").forEach((i) => (i.value = ""));
   showToast("Google Sheet form cleared", "info");
 });
+
