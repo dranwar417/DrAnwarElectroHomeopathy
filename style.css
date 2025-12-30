@@ -291,7 +291,16 @@ tbody tr:hover td {
   }
 }
 
+hr {
+  border: none;
+  height: 1px;
+  margin: 28px 0;
+  background: linear-gradient(to right, transparent, #d6dbe8, transparent);
+}
 
+/* =========================
+   TOAST (IMPROVED)
+========================= */
 .toast {
   position: fixed;
   bottom: 22px;
@@ -314,9 +323,7 @@ tbody tr:hover td {
   opacity: 0;
   pointer-events: none;
 
-  transition:
-    opacity 0.35s ease,
-    transform 0.35s ease;
+  transition: opacity 0.35s ease, transform 0.35s ease;
 
   z-index: 2000;
   text-align: center;
@@ -355,4 +362,19 @@ tbody tr:hover td {
     padding: 12px 16px;
     border-radius: 10px;
   }
+}
+
+.loading {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  background: #333;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  z-index: 9999;
+}
+.hidden {
+  display: none;
 }
